@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация - Game Portfolio</title>
+  <link th:href="@{/css/auth.css}" rel="stylesheet">
+</head>
+<body>
+<div class="auth-container">
+  <div class="auth-logo">
+    <img th:src="@{/images/google-logo.png}" alt="Logo">
+  </div>
+
+  <h1 class="auth-title">Создайте аккаунт</h1>
+  <p class="auth-subtitle">Продолжите, чтобы создать портфолио игровых проектов</p>
+
+  <form class="auth-form" th:action="@{/register}" method="post">
+    <div style="display: flex; gap: 10px;">
+      <input type="text" th:field="*{firstName}" placeholder="Имя" required>
+      <input type="text" th:field="*{lastName}" placeholder="Фамилия" required>
+    </div>
+
+    <input type="email" th:field="*{email}" placeholder="Email" required>
+    <input type="password" th:field="*{password}" placeholder="Пароль" required>
+
+    <div style="margin: 15px 0; font-size: 14px;">
+      <input type="checkbox" th:field="*{agreeToTerms}" id="terms">
+      <label for="terms">Я согласен с условиями использования и политикой конфиденциальности</label>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+      <a href="/login" style="color: #1a73e8; text-decoration: none;">Войти вместо этого</a>
+      <button type="submit">Далее</button>
+    </div>
+  </form>
+
+  <div class="auth-footer">
+    <p>© 2024 Game Portfolio. Все права защищены.</p>
+  </div>
+</div>
+</body>
+</html>
