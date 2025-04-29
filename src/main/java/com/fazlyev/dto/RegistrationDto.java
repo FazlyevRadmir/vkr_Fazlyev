@@ -11,14 +11,15 @@ public class RegistrationDto {
     @NotBlank(message = "Фамилия обязательна")
     private String lastName;
 
-    @Email(message = "Некорректный email")
+    @Email(message = "Введите действительный email")
     @NotBlank(message = "Email обязателен")
     private String email;
 
-    @Size(min = 8, message = "Пароль должен быть минимум 8 символов")
+    @Size(min = 8, message = "Пароль должен содержать минимум 8 символов")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
-            message = "Пароль должен содержать заглавные, строчные буквы и цифры")
+            message = "Пароль должен содержать заглавные и строчные буквы, а также цифры")
     private String password;
 
-    private boolean agreeToTerms; // Для галочки "Я согласен"
+    @AssertTrue(message = "Необходимо принять условия")
+    private boolean agreeToTerms;
 }

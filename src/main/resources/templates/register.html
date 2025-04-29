@@ -5,38 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Регистрация - Game Portfolio</title>
   <link th:href="@{/css/auth.css}" rel="stylesheet">
+  <style>
+    .password-hint {
+      color: #5f6368;
+      font-size: 12px;
+      margin: -10px 0 15px;
+    }
+    .error-message {
+      color: #d93025;
+      font-size: 12px;
+      margin-top: -15px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
 <div class="auth-container">
   <div class="auth-logo">
-    <img th:src="@{/images/google-logo.png}" alt="Logo">
+    <img th:src="@{/images/google-logo.png}" alt="Logo" width="72">
   </div>
 
   <h1 class="auth-title">Создайте аккаунт</h1>
-  <p class="auth-subtitle">Продолжите, чтобы создать портфолио игровых проектов</p>
+  <p class="auth-subtitle">Для публикации своих игровых проектов</p>
 
-  <form class="auth-form" th:action="@{/register}" method="post">
+  <form class="auth-form" th:action="@{/register}" method="post" th:object="${user}">
     <div style="display: flex; gap: 10px;">
-      <input type="text" th:field="*{firstName}" placeholder="Имя" required>
-      <input type="text" th:field="*{lastName}" placeholder="Фамилия" required>
+      <div style="flex: 1;">
+        <input type="text" th:field="*{firstName}" placeholder="Имя" required>
+        <div class="error-message" th:if="${#fields.hasErrors('firstName')}"
+             th:errors="*{firstName}"></div>
+      </div>
+      <div style="flex: 1;">
+        <input type="text" th:field="*{lastName}" placeholder="Фамилия" required>
+        <div class="error-message" th:if="${#fields.hasErrors('lastName')}"
+             th:errors="*{lastName}"></div>
+      </div>
     </div>
 
     <input type="email" th:field="*{email}" placeholder="Email" required>
-    <input type="password" th:field="*{password}" placeholder="Пароль" required>
+    <div class="error-message" th:if="${#fields.hasErrors('email')}"
+         th:errors="*{email}"></div>
 
-    <div style="margin: 15px 0; font-size: 14px;">
-      <input type="checkbox" th:field="*{agreeToTerms}" id="terms">
-      <label for="terms">Я согласен с условиями использования и политикой конфиденциальности</label>
+    <input type="password" th:field="*{password}" placeholder="Пароль" required>
+    <div class="password-hint">Используйте не менее 8 символов с буквами и цифрами</div>
+    <div class="error-message" th:if="${#fields.hasErrors('password')}"
+         th:errors="*{password}"></div>
+
+    <div style="margin: 20px 0; font-size: 14px; display: flex; align-items: start;">
+      <input type="checkbox" th:field="*{agreeToTerms}" id="terms" style="margin-top: 3px;">
+      <label for="terms" style="margin-left: 8px; color: #5f6368;">
+        Я согласен с <a href="#" style="color: #1a73e8;">Условиями использования</a> и
+        <a href="#" style="color: #1a73e8;">Политикой конфиденциальности</a>
+      </label>
     </div>
+    <div class="error-message" th:if="${#fields.hasErrors('agreeToTerms')}"
+         th:errors="*{agreeToTerms}"></div>
 
     <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-      <a href="/login" style="color: #1a73e8; text-decoration: none;">Войти вместо этого</a>
-      <button type="submit">Далее</button>
+      <a href="/login" style="color: #1a73e8; text-decoration: none; line-height: 36px;">
+        Уже есть аккаунт? Войдите
+      </a>
+      <button type="submit" style="background: #1a73e8; color: white;
+                    border: none; padding: 0 24px; border-radius: 4px; height: 36px;
+                    font-weight: 500; cursor: pointer;">
+        Далее
+      </button>
     </div>
   </form>
 
   <div class="auth-footer">
-    <p>© 2024 Game Portfolio. Все права защищены.</p>
+    <select style="border: none; color: #5f6368; font-size: 12px; background: transparent;">
+      <option>Русский</option>
+      <option>English</option>
+    </select>
+    <div style="margin-top: 10px; font-size: 12px; color: #5f6368;">
+      © 2024 Game Portfolio. Все права защищены.
+    </div>
   </div>
 </div>
 </body>

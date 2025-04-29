@@ -1,86 +1,58 @@
-/* static/css/auth.css */
 .auth-container {
     max-width: 450px;
     margin: 40px auto;
     padding: 48px 40px 36px;
     border: 1px solid #dadce0;
     border-radius: 8px;
-    box-shadow: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: white;
 }
 
 .auth-logo {
     text-align: center;
-    margin-bottom: 20px;
-}
-
-.auth-logo img {
-    width: 75px;
-    height: 24px;
+    margin-bottom: 16px;
 }
 
 .auth-title {
     text-align: center;
     font-size: 24px;
     font-weight: 400;
-    margin: 15px 0;
+    margin: 12px 0;
+    color: #202124;
 }
 
 .auth-subtitle {
     text-align: center;
     color: #5f6368;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
+    font-size: 16px;
 }
 
 .auth-form input {
     width: 100%;
     padding: 13px 15px;
-    margin-bottom: 20px;
+    margin-bottom: 6px;
     border: 1px solid #dadce0;
     border-radius: 4px;
     font-size: 16px;
+    box-sizing: border-box;
 }
 
-.auth-form button {
-    width: 100%;
-    background: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 10px;
+.auth-form input:focus {
+    border-color: #1a73e8;
+    outline: none;
+    box-shadow: 0 0 0 2px #e8f0fe;
 }
 
 .auth-footer {
-    margin-top: 30px;
+    margin-top: 40px;
     text-align: center;
-    color: #5f6368;
-    font-size: 14px;
 }
 
-/* Адаптивность */
 @media (max-width: 600px) {
     .auth-container {
         border: none;
-        margin: 20px;
+        margin: 0 20px;
+        padding: 24px 20px;
     }
-}
-
-/* Валидация */
-input:invalid {
-    border-color: #d93025;
-}
-
-input:focus:invalid {
-    box-shadow: 0 0 0 2px #fce8e6;
-}
-
-.error-message {
-    color: #d93025;
-    font-size: 12px;
-    margin-top: -15px;
-    margin-bottom: 15px;
-    display: block;
 }

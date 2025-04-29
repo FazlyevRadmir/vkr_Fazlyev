@@ -5,6 +5,7 @@ import com.fazlyev.model.Role;
 import com.fazlyev.model.User;
 import com.fazlyev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,15 +17,16 @@ public class UserService {
 
     public void registerUser(RegistrationDto dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email уже используется");
+            throw new RuntimeException("Этот email уже используется");
         }
 
-        User user = new User();
-        user.setFirstName(dto.getFirstName());  // Используем getFirstName()
-        user.setLastName(dto.getLastName());    // Используем getLastName()
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setRole(Role.STUDENT);  // Или другое значение по умолчанию
+        User user = User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .role(Role.STUDENT)
+                .build();
 
         userRepository.save(user);
     }
