@@ -2,24 +2,21 @@ package com.fazlyev.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Data
 public class RegistrationDto {
-    @NotBlank(message = "Имя обязательно")
-    private String firstName;
-
-    @NotBlank(message = "Фамилия обязательна")
-    private String lastName;
-
-    @Email(message = "Введите действительный email")
     @NotBlank(message = "Email обязателен")
+    @Email(message = "Некорректный формат email")
     private String email;
 
+    @NotBlank(message = "Пароль обязателен")
     @Size(min = 8, message = "Пароль должен содержать минимум 8 символов")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
-            message = "Пароль должен содержать заглавные и строчные буквы, а также цифры")
     private String password;
 
-    @AssertTrue(message = "Необходимо принять условия")
-    private boolean agreeToTerms;
+    @NotBlank(message = "Подтверждение пароля обязательно")
+    private String confirmPassword;
 }

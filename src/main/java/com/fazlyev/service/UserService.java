@@ -1,13 +1,12 @@
 package com.fazlyev.service;
 
 import com.fazlyev.dto.RegistrationDto;
-import com.fazlyev.model.Role;
 import com.fazlyev.model.User;
 import com.fazlyev.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,17 +14,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void registerUser(RegistrationDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Этот email уже используется");
+    @Transactional
+    public void registerUser(RegistrationDto registrationDto) {
+        if (userRepository.existsByEmail(registrationDto.getEmail())) {
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
+        }
+
+        if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Пароли не совпадают");
         }
 
         User user = User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .role(Role.STUDENT)
+                .email(registrationDto.getEmail())
+                .password(passwordEncoder.encode(registrationDto.getPassword()))
                 .build();
 
         userRepository.save(user);
