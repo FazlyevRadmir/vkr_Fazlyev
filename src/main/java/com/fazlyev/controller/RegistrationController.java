@@ -22,7 +22,7 @@ public class RegistrationController {
     @GetMapping
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new RegistrationDto());
-        return "registration";
+        return "registration"; // Возвращаем форму регистрации
     }
 
     @PostMapping
@@ -31,15 +31,23 @@ public class RegistrationController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes) {
 
+        // Проверка на совпадение паролей
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            bindingResult.rejectValue("confirmPassword", "passwords.not.match", "Пароли не совпадают");
+        }
+
+        // Если есть ошибки в валидации, возвращаем обратно на форму
         if (bindingResult.hasErrors()) {
             return "registration";
         }
 
         try {
+            // Если ошибок нет, регистрируем пользователя
             userService.registerUser(dto);
             redirectAttributes.addFlashAttribute("success", true);
             return "redirect:/registration?success";
         } catch (IllegalArgumentException e) {
+            // Если ошибка при регистрации, отображаем ошибку для поля email
             bindingResult.rejectValue("email", "email.exists", e.getMessage());
             return "registration";
         }

@@ -20,10 +20,6 @@ public class UserService {
             throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
 
-        if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
-            throw new IllegalArgumentException("Пароли не совпадают");
-        }
-
         User user = User.builder()
                 .email(registrationDto.getEmail())
                 .password(passwordEncoder.encode(registrationDto.getPassword()))

@@ -1,5 +1,6 @@
 package com.fazlyev.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,26 +9,47 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/registration", "/login").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/registration",
+                                "/registration/**",
+                                "/login",
+                                "/login/**",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/error"  // Добавляем обработку ошибок
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/personalAccount", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (!request.getRequestURI().startsWith("/api")) {
+                                response.sendRedirect("/login");
+                            } else {
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                            }
+                        })
                 );
 
         return http.build();

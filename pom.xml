@@ -12,8 +12,8 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>com.faziyev</groupId>
-    <artifactId>vkr-faziyev</artifactId>
+    <groupId>com.fazlyev</groupId>
+    <artifactId>vkr-fazlyev</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>vkr_fazlyev</name>
     <description>Дипломный проект</description>
@@ -48,6 +48,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
 
         <!-- База данных -->
         <dependency>
