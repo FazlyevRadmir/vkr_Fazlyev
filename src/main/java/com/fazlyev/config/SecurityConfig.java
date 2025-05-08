@@ -1,15 +1,18 @@
 package com.fazlyev.config;
 
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import com.fazlyev.service.FirebaseAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+import javax.naming.AuthenticationException;
 
 @Configuration
 @EnableWebSecurity
@@ -18,45 +21,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .invalidSessionUrl("/login?invalid-session")
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/",
-                                "/registration",
-                                "/registration/**",
-                                "/login",
-                                "/login/**",
-                                "/css/**",
-                                "/js/**",
-                                "/images/**",
-                                "/error"  // Добавляем обработку ошибок
-                        ).permitAll()
+                        .requestMatchers("/", "/login", "/registration", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email") // Указываем, что email используется как username
                         .defaultSuccessUrl("/personalAccount", true)
-                        .failureUrl("/login?error=true")
-                        .permitAll()
+                        .failureUrl("/login?error")
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
-                        .permitAll()
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
                 )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            if (!request.getRequestURI().startsWith("/api")) {
-                                response.sendRedirect("/login");
-                            } else {
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                            }
-                        })
-                );
+                .authenticationProvider(firebaseAuthenticationProvider()); // Добавляем кастомный провайдер
 
         return http.build();
     }
 
     @Bean
+    public FirebaseAuthenticationProvider firebaseAuthenticationProvider() {
+        return new FirebaseAuthenticationProvider();
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();  // You can choose a different encoder if needed
     }
 }

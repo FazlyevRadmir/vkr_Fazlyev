@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-card {
+            max-width: 800px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .input-field {
+            transition: all 0.3s;
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background-color: #f3f4f6;
+            color: #4b5563;
+        }
+        .save-btn {
+            transition: all 0.3s;
+            padding: 12px 24px;
+            border-radius: 10px;
+        }
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .email-field {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-10">
+<div class="container mx-auto px-4">
+    <div class="profile-card bg-white mx-auto p-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Личная информация</h1>
+        </div>
+        <!-- Добавьте после заголовка -->
+        <div th:if="${param.success}" class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+            Данные успешно сохранены!
+        </div>
+        <div th:if="${error}" class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+            <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/profile/update}" th:object="${profileForm}" method="POST" class="space-y-6">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <!-- Аватар и основная информация -->
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Аватар -->
+                <div class="flex-shrink-0">
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full bg-gray-200 overflow-hidden border-4 border-white shadow-md">
+                            <img th:src="${user != null && user.avatarUrl != null ? user.avatarUrl : '/images/profile.png'}"
+                                 alt="Аватар" class="w-full h-full object-cover">
+                        </div>
+                        <button type="button" class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full shadow-md hover:bg-blue-700 transition">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Основные поля -->
+                <div class="flex-grow space-y-4">
+                    <!-- Email (только для чтения) -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <!-- Скрытое поле для передачи значения на сервер -->
+                        <input type="hidden" id="email" name="email"
+                               th:value="${email}">
+                        <!-- Отображаемое поле только для чтения -->
+                        <input type="email"
+                               th:value="${email}"
+                               class="input-field w-full border border-gray-300 email-field" disabled>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
+                            <input type="text" id="firstName" th:field="*{firstName}"
+                                   class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Фамилия</label>
+                            <input type="text" id="lastName" th:field="*{lastName}"
+                                   class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="birthDate" class="block text-sm font-medium text-gray-700 mb-1">Дата рождения</label>
+                        <input type="date" id="birthDate" th:field="*{birthDate}"
+                               class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <!-- Кнопка смены пароля -->
+                    <div class="pt-2">
+                        <a href="/change-password" class="text-blue-600 hover:text-blue-800 text-sm flex items-center">
+                            <i class="fas fa-key mr-2"></i> Изменить пароль
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Социальные сети и образование -->
+            <!-- Социальные сети и образование -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                <!-- Социальные сети -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-share-alt mr-2"></i> Социальные сети
+                    </h3>
+
+                    <div class="flex items-center">
+                        <div class="social-icon mr-3 flex-shrink-0">
+                            <i class="fab fa-telegram text-xl"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <label for="telegram" class="block text-sm font-medium text-gray-700 mb-1">Telegram</label>
+                            <input type="text" id="telegram" th:field="*{telegram}"
+                                   class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                   placeholder="@username">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="social-icon mr-3 flex-shrink-0">
+                            <i class="fab fa-github text-xl"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <label for="github" class="block text-sm font-medium text-gray-700 mb-1">GitHub</label>
+                            <input type="text" id="github" th:field="*{github}"
+                                   class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                   placeholder="username">
+                        </div>
+                    </div>
+                </div> <!-- Закрывающий тег для блока социальных сетей -->
+
+                <!-- Образование -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2"></i> Образование
+                    </h3>
+
+                    <div>
+                        <label for="university" class="block text-sm font-medium text-gray-700 mb-1">Место учебы</label>
+                        <input type="text" id="university" th:field="*{university}"
+                               class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="course" class="block text-sm font-medium text-gray-700 mb-1">Курс</label>
+                        <select id="course" th:field="*{course}"
+                                class="input-field w-full border border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Выберите курс</option>
+                            <option value="1">1 курс</option>
+                            <option value="2">2 курс</option>
+                            <option value="3">3 курс</option>
+                            <option value="4">4 курс</option>
+                            <option value="5">5 курс</option>
+                            <option value="6">6 курс</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div class="flex justify-end space-x-4 pt-6">
+                <a href="/personalAccount" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    Отмена
+                </a>
+                <button type="submit" class="save-btn bg-blue-600 text-white hover:bg-blue-700">
+                    Сохранить изменения
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,54 +1,70 @@
 package com.fazlyev.controller;
 
 import com.fazlyev.dto.RegistrationDto;
-import com.fazlyev.service.UserService;
+import com.fazlyev.util.FirebaseErrorTranslator;
+import com.google.cloud.firestore.Firestore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.UserRecord;
+import com.google.firebase.cloud.FirestoreClient;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Controller
-@RequestMapping("/registration")
-@RequiredArgsConstructor
 public class RegistrationController {
-    private final UserService userService;
+    private static final Logger log = LoggerFactory.getLogger(RegistrationController.class);
 
-    @GetMapping
+    @GetMapping("/registration")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new RegistrationDto());
-        return "registration"; // Возвращаем форму регистрации
+        return "registration";
     }
 
-    @PostMapping
-    public String registerUser(
-            @Valid @ModelAttribute("user") RegistrationDto dto,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
-
-        // Проверка на совпадение паролей
-        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-            bindingResult.rejectValue("confirmPassword", "passwords.not.match", "Пароли не совпадают");
-        }
-
-        // Если есть ошибки в валидации, возвращаем обратно на форму
-        if (bindingResult.hasErrors()) {
-            return "registration";
-        }
-
+    @PostMapping("/registration")
+    public String registerUser(@Valid @ModelAttribute("user") RegistrationDto dto,
+                               BindingResult bindingResult,
+                               Model model) {
         try {
-            // Если ошибок нет, регистрируем пользователя
-            userService.registerUser(dto);
-            redirectAttributes.addFlashAttribute("success", true);
-            return "redirect:/registration?success";
-        } catch (IllegalArgumentException e) {
-            // Если ошибка при регистрации, отображаем ошибку для поля email
-            bindingResult.rejectValue("email", "email.exists", e.getMessage());
+            if (bindingResult.hasErrors()) {
+                return "registration";
+            }
+
+            if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+                model.addAttribute("error", "Пароли не совпадают");
+                return "registration";
+            }
+
+            UserRecord userRecord = FirebaseAuth.getInstance().createUser(
+                    new UserRecord.CreateRequest()
+                            .setEmail(dto.getEmail())
+                            .setPassword(dto.getPassword())
+            );
+
+            // Сохранение в Firestore
+            Firestore db = FirestoreClient.getFirestore();
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("uid", userRecord.getUid());
+            userData.put("email", dto.getEmail());
+            db.collection("users").document(userRecord.getUid()).set(userData);
+
+            return "redirect:/login?success";
+
+        } catch (FirebaseAuthException e) {
+            model.addAttribute("error", FirebaseErrorTranslator.translateRegistrationError(e));
+            model.addAttribute("user", dto);
             return "registration";
         }
     }
