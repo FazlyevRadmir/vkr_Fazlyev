@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Добавить проект</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .file-upload {
+      border: 2px dashed #cbd5e0;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .file-upload:hover {
+      border-color: #4299e1;
+    }
+    .file-preview-container {
+      display: none;
+      margin-top: 1rem;
+    }
+    .file-preview-item {
+      background-color: #f8fafc;
+      border-radius: 0.375rem;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    .file-preview-name {
+      flex-grow: 1;
+      margin-left: 0.5rem;
+      font-size: 0.875rem;
+      color: #4b5563;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .remove-file-btn {
+      color: #ef4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 0.5rem;
+    }
+    .file-upload-area {
+      transition: all 0.3s;
+    }
+    .file-upload-area:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+<div class="container mx-auto px-4 max-w-4xl">
+  <div class="bg-white rounded-xl shadow-md p-8">
+    <div class="mb-4">
+      <a th:href="@{/personalAccount}"
+         class="text-blue-600 hover:text-blue-800 flex items-center">
+        <i class="fas fa-arrow-left mr-2"></i>
+        Вернуться в личный кабинет
+      </a>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Добавить новый проект</h1>
+
+    <form th:action="@{/projects}" method="post"
+          enctype="multipart/form-data"
+          th:object="${projectForm}"
+          class="space-y-6">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+      <!-- Основная информация -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Название проекта</label>
+        <input type="text" th:field="*{title}"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
+        <textarea th:field="*{description}" rows="4"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"></textarea>
+      </div>
+
+      <!-- Категория -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Категория</label>
+        <select th:field="*{category}"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+          <option value="">Выберите категорию</option>
+          <option th:each="cat : ${categories}"
+                  th:value="${cat.id}"
+                  th:text="${cat.name}"></option>
+        </select>
+      </div>
+
+      <!-- Скриншоты -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Скриншоты (максимум 5)</label>
+        <div class="file-upload">
+          <input type="file" name="screenshots" multiple accept="image/*"
+                 class="hidden" id="screenshots">
+          <label for="screenshots" class="cursor-pointer file-upload-area">
+            <div class="flex flex-col items-center justify-center">
+              <i class="fas fa-cloud-upload-alt text-3xl text-blue-500 mb-2"></i>
+              <p class="text-gray-600">Перетащите файлы сюда или нажмите для выбора</p>
+              <p class="text-sm text-gray-500 mt-1">Поддерживаются: JPG, PNG</p>
+            </div>
+          </label>
+          <div class="file-preview-container" id="screenshots-preview">
+            <p class="text-sm text-gray-500 mb-2">Выбранные скриншоты:</p>
+            <div id="screenshots-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Основной файл -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Основной файл</label>
+        <div class="file-upload">
+          <input type="file" name="mainFile" required id="mainFile" class="hidden">
+          <label for="mainFile" class="cursor-pointer file-upload-area">
+            <div class="flex flex-col items-center justify-center">
+              <i class="fas fa-file-archive text-3xl text-blue-500 mb-2"></i>
+              <p class="text-gray-600">Загрузите основной файл проекта</p>
+              <p class="text-sm text-gray-500 mt-1">Поддерживаются: JAR, ZIP, EXE</p>
+            </div>
+          </label>
+          <div class="file-preview-container" id="mainFile-preview">
+            <p class="text-sm text-gray-500 mb-2">Выбранный основной файл:</p>
+            <div id="mainFile-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопка отправки -->
+      <div class="pt-4">
+        <button type="submit"
+                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Опубликовать проект
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Font Awesome для иконок -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+<script>
+  // Общая функция для создания элемента превью файла
+  function createFilePreview(file, index, inputId) {
+    const previewItem = document.createElement('div');
+    previewItem.className = 'file-preview-item';
+    previewItem.innerHTML = `
+      <div class="flex items-center w-full">
+        <i class="fas ${file.type.startsWith('image/') ? 'fa-image' : 'fa-file'} text-blue-500"></i>
+        <span class="file-preview-name">${file.name}</span>
+        <button type="button" class="remove-file-btn" data-index="${index}" data-input="${inputId}">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    return previewItem;
+  }
+
+  // Обработка скриншотов
+  document.getElementById('screenshots').addEventListener('change', function(e) {
+    const files = e.target.files;
+    const previewContainer = document.getElementById('screenshots-list');
+    previewContainer.innerHTML = '';
+
+    if (files.length > 0) {
+      document.getElementById('screenshots-preview').style.display = 'block';
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        previewContainer.appendChild(createFilePreview(file, i, 'screenshots'));
+      }
+    } else {
+      document.getElementById('screenshots-preview').style.display = 'none';
+    }
+  });
+
+  // Обработка основного файла
+  document.getElementById('mainFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const previewContainer = document.getElementById('mainFile-list');
+    previewContainer.innerHTML = '';
+
+    if (file) {
+      document.getElementById('mainFile-preview').style.display = 'block';
+      previewContainer.appendChild(createFilePreview(file, 0, 'mainFile'));
+    } else {
+      document.getElementById('mainFile-preview').style.display = 'none';
+    }
+  });
+
+  // Удаление файлов
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-file-btn')) {
+      const btn = e.target.closest('.remove-file-btn');
+      const index = btn.getAttribute('data-index');
+      const inputId = btn.getAttribute('data-input');
+      const input = document.getElementById(inputId);
+
+      if (input.multiple) {
+        // Для множественного выбора
+        const files = Array.from(input.files);
+        files.splice(index, 1);
+
+        // Создаем новый DataTransfer и добавляем оставшиеся файлы
+        const dataTransfer = new DataTransfer();
+        files.forEach(file => dataTransfer.items.add(file));
+        input.files = dataTransfer.files;
+
+        // Триггерим событие change для обновления превью
+        input.dispatchEvent(new Event('change'));
+      } else {
+        // Для одиночного файла
+        input.value = '';
+        document.getElementById(`${inputId}-preview`).style.display = 'none';
+        document.getElementById(`${inputId}-list`).innerHTML = '';
+      }
+    }
+  });
+
+  // Обработка отправки формы
+  document.querySelector('form').addEventListener('submit', function() {
+    const button = this.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Публикация...';
+  });
+</script>
+</body>
+</html>
