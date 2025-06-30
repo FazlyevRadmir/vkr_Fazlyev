@@ -53,7 +53,6 @@ public class RegistrationController {
                             .setPassword(dto.getPassword())
             );
 
-            // Сохранение в Firestore
             Firestore db = FirestoreClient.getFirestore();
             Map<String, Object> userData = new HashMap<>();
             userData.put("uid", userRecord.getUid());

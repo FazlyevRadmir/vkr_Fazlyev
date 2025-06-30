@@ -13,13 +13,11 @@ public class FirebaseUserDetailsService implements org.springframework.security.
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            // Получаем пользователя по email
             com.google.firebase.auth.UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail(email);
 
-            // Возвращаем UserDetails с данными из Firebase
             return User.builder()
                     .username(userRecord.getEmail())
-                    .password("") // Firebase не хранит пароль в открытом виде
+                    .password("")
                     .roles("USER")
                     .build();
         } catch (FirebaseAuthException e) {

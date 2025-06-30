@@ -43,7 +43,6 @@ public class ProjectController {
 
     @GetMapping("/new")
     public String newProjectForm(Model model) throws ExecutionException, InterruptedException {
-        // Убедитесь, что имя атрибута "projectForm" совпадает с тем, что используется в форме
         model.addAttribute("projectForm", new ProjectForm());
         model.addAttribute("categories", categoryService.getAllCategories());
         return "project/new";
@@ -55,7 +54,6 @@ public class ProjectController {
             Authentication authentication)
             throws IOException, ExecutionException, InterruptedException {
 
-        // 1. Загрузка файлов в Firebase Storage
         List<String> screenshotUrls = fileStorageService.uploadFiles(
                 form.getScreenshots().toArray(new MultipartFile[0]), "screenshots");
         String mainFileUrl = fileStorageService.uploadFile(form.getMainFile(), "mainFiles");
@@ -64,7 +62,6 @@ public class ProjectController {
                         form.getAdditionalFiles().toArray(new MultipartFile[0]), "additionalFiles") :
                 null;
 
-        // 2. Создание объекта проекта
         Project project = new Project();
         project.setTitle(form.getTitle());
         project.setDescription(form.getDescription());
@@ -75,7 +72,6 @@ public class ProjectController {
         project.setMainFileUrl(mainFileUrl);
         project.setAdditionalFileUrls(additionalFileUrls);
 
-        // 3. Сохранение в Firebase Firestore
         projectService.saveProject(project);
 
         return "redirect:/projects/" + project.getId();
@@ -83,7 +79,7 @@ public class ProjectController {
 
     private String getCurrentUserId(Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
-            return authentication.getName(); // Возвращает email пользователя
+            return authentication.getName();
         }
         return "anonymous";
     }
@@ -172,11 +168,11 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String filePath = "screenshots/" + fileName; // или другой путь
+        String filePath = "screenshots/" + fileName;
         byte[] imageBytes = fileStorageService.downloadFile(filePath);
 
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG) // или MediaType.IMAGE_PNG
+                .contentType(MediaType.IMAGE_JPEG)
                 .body(imageBytes);
     }
 

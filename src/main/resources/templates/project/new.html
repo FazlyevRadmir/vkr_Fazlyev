@@ -151,7 +151,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 <script>
-  // Общая функция для создания элемента превью файла
   function createFilePreview(file, index, inputId) {
     const previewItem = document.createElement('div');
     previewItem.className = 'file-preview-item';
@@ -167,7 +166,6 @@
     return previewItem;
   }
 
-  // Обработка скриншотов
   document.getElementById('screenshots').addEventListener('change', function(e) {
     const files = e.target.files;
     const previewContainer = document.getElementById('screenshots-list');
@@ -185,7 +183,6 @@
     }
   });
 
-  // Обработка основного файла
   document.getElementById('mainFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const previewContainer = document.getElementById('mainFile-list');
@@ -199,7 +196,6 @@
     }
   });
 
-  // Удаление файлов
   document.addEventListener('click', function(e) {
     if (e.target.closest('.remove-file-btn')) {
       const btn = e.target.closest('.remove-file-btn');
@@ -208,19 +204,15 @@
       const input = document.getElementById(inputId);
 
       if (input.multiple) {
-        // Для множественного выбора
         const files = Array.from(input.files);
         files.splice(index, 1);
 
-        // Создаем новый DataTransfer и добавляем оставшиеся файлы
         const dataTransfer = new DataTransfer();
         files.forEach(file => dataTransfer.items.add(file));
         input.files = dataTransfer.files;
 
-        // Триггерим событие change для обновления превью
         input.dispatchEvent(new Event('change'));
       } else {
-        // Для одиночного файла
         input.value = '';
         document.getElementById(`${inputId}-preview`).style.display = 'none';
         document.getElementById(`${inputId}-list`).innerHTML = '';
@@ -228,7 +220,6 @@
     }
   });
 
-  // Обработка отправки формы
   document.querySelector('form').addEventListener('submit', function() {
     const button = this.querySelector('button[type="submit"]');
     button.disabled = true;

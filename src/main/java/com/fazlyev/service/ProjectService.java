@@ -81,7 +81,6 @@ public class ProjectService implements ProjectServiceInterface {
             throw new IllegalArgumentException("Проект не найден");
         }
 
-        // Получаем текущие данные
         double currentRating = snapshot.contains("averageRating") ?
                 snapshot.getDouble("averageRating") : 0.0;
         int ratingCount = snapshot.contains("ratingCount") ?
@@ -89,7 +88,6 @@ public class ProjectService implements ProjectServiceInterface {
         Map<String, Integer> userRatings = snapshot.contains("userRatings") ?
                 (Map<String, Integer>) snapshot.get("userRatings") : new HashMap<>();
 
-        // Если пользователь уже оценивал
         if (userRatings.containsKey(userId)) {
             int oldRating = userRatings.get(userId);
             currentRating = (currentRating * ratingCount - oldRating + rating) / ratingCount;
@@ -98,10 +96,8 @@ public class ProjectService implements ProjectServiceInterface {
             ratingCount++;
         }
 
-        // Обновляем данные пользователя
         userRatings.put(userId, rating);
 
-        // Сохраняем в Firestore
         docRef.update(
                 "averageRating", currentRating,
                 "ratingCount", ratingCount,

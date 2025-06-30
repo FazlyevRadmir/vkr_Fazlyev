@@ -12,7 +12,7 @@ public class ProfileForm {
     private String email;
     private String firstName;
     private String lastName;
-    private LocalDate birthDate; // Изменили на Date для Firebase
+    private LocalDate birthDate;
     private String telegram;
     private String github;
     private String university;

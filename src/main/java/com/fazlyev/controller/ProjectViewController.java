@@ -29,7 +29,6 @@ public class ProjectViewController {
             return "redirect:/error";
         }
 
-        // Добавляем userRating если пользователь авторизован
         if (authentication != null && authentication.isAuthenticated()) {
             Integer userRating = project.getUserRatings() != null ?
                     project.getUserRatings().get(authentication.getName()) :
@@ -51,6 +50,6 @@ public class ProjectViewController {
     public String showProjectFeed(Model model) throws ExecutionException, InterruptedException {
         List<Project> allProjects = projectService.getAllProjects();
         model.addAttribute("projects", allProjects);
-        return "project/feed"; // Шаблон для ленты
+        return "project/feed";
     }
 }

@@ -27,11 +27,8 @@ public class FirebaseAuthenticationProvider implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
 
         try {
-            // 1. Проверяем существование пользователя
             UserRecord userRecord = FirebaseAuth.getInstance().getUserByEmail(email);
-
-            // 2. Аутентифицируем через REST API
-            String apiKey = "AIzaSyAlMk-gLNH7MidDHKV3elb03J7p1QzJm9g"; // Замените на реальный ключ из Firebase Console
+            String apiKey = "AIzaSyAlMk-gLNH7MidDHKV3elb03J7p1QzJm9g";
             String url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();

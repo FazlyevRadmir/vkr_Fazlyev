@@ -24,7 +24,6 @@ public class ProfileService {
                 Date.from(profileForm.getBirthDate().atStartOfDay(ZoneId.systemDefault()).toInstant()) :
                 null;
 
-        // Обновляем напрямую поля документа (без подколлекции profile)
         Map<String, Object> updates = new HashMap<>();
         updates.put("firstName", profileForm.getFirstName());
         updates.put("lastName", profileForm.getLastName());

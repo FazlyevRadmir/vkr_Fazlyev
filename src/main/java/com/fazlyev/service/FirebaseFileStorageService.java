@@ -44,7 +44,6 @@ public class FirebaseFileStorageService implements FileStorageService {
 
             storage.create(blobInfo, file.getBytes());
 
-            // Используем стандартный URL Firebase
             return "https://firebasestorage.googleapis.com/v0/b/" + bucketName + "/o/" +
                     URLEncoder.encode(fullPath, "UTF-8") + "?alt=media";
         } catch (Exception e) {
@@ -70,7 +69,7 @@ public class FirebaseFileStorageService implements FileStorageService {
     public String generateDownloadUrl(String filePath) {
         BlobId blobId = BlobId.of(bucketName, filePath);
         Blob blob = storage.get(blobId);
-        return blob.signUrl(7, TimeUnit.DAYS).toString();  // Токен на 7 дней
+        return blob.signUrl(7, TimeUnit.DAYS).toString();
     }
 
     @Override

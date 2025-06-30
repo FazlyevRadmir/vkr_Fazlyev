@@ -4,7 +4,6 @@ public class LoginForm {
     private String email;
     private String password;
 
-    // Геттеры и сеттеры
     public String getEmail() {
         return email;
     }

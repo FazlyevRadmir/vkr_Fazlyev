@@ -15,8 +15,8 @@ public class Project {
     private String authorId;
     private double averageRating = 0.0;
     private int ratingCount = 0;
-    private Map<String, Integer> userRatings = new HashMap<>(); // Оценки пользователей (userId -> rating)
-    private List<Comment> comments; // Список комментариев
+    private Map<String, Integer> userRatings = new HashMap<>();
+    private List<Comment> comments;
     private Date createdAt = new Date();
     private List<String> screenshotUrls;
     private String mainFileUrl;

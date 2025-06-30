@@ -1,10 +1,8 @@
 package com.fazlyev.controller;
 
 import com.fazlyev.model.ProfileForm;
-import com.fazlyev.model.User;
 import com.fazlyev.service.FirebaseUserAuthentication;
 import com.fazlyev.service.ProfileService;
-import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -34,10 +32,9 @@ public class ProfileController {
             String uid = token.getUid();
             String email = token.getName();
 
-            // Загрузка профиля
             ProfileForm profile = profileService.getProfile(uid);
             model.addAttribute("profileForm", profile);
-            model.addAttribute("email", email); // Исправлено: было "userEmail", стало "email"
+            model.addAttribute("email", email);
 
             return "editProfile";
         }

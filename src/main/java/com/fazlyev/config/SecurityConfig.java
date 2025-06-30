@@ -3,7 +3,6 @@ package com.fazlyev.config;
 import com.fazlyev.service.FirebaseAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,7 +33,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .usernameParameter("email") // Указываем, что email используется как username
+                        .usernameParameter("email")
                         .defaultSuccessUrl("/personalAccount", true)
                         .failureUrl("/login?error")
                 )
@@ -43,7 +42,7 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .invalidateHttpSession(true)
                 )
-                .authenticationProvider(firebaseAuthenticationProvider()); // Добавляем кастомный провайдер
+                .authenticationProvider(firebaseAuthenticationProvider());
 
         return http.build();
     }
