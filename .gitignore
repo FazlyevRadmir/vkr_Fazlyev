@@ -35,7 +35,4 @@ build/
 .vscode/
 
 ### Mac OS ###
-.DS_Stores
-
-### Remove secrets and add to gitignore ###
-src/main/resources/firebase-service-account.json
+.DS_Store
