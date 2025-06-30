@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Remove secrets and add to gitignore ###
+src/main/resources/firebase-service-account.json
